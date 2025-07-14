@@ -1,1 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English Vocabulary Quiz</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .title {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .question-counter {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background-color: #e5e5e5;
+            border-radius: 4px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: #3b82f6;
+            transition: width 0.3s ease;
+        }
+
+        .question {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .options-container {
+            margin-bottom: 20px;
+        }
+
+        .options-label {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .options-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .option-button {
+            padding: 10px 20px;
+            border: 2px solid #e5e5e5;
+            border-radius: 6px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.9em;
+        }
+
+        .option-button:hover {
+            border-color: #d1d5db;
+            background-color: #f9fafb;
+        }
+
+        .option-button.selected {
+            border-color: #3b82f6;
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+
+        .mcq-option {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 10px;
+            border: 2px solid #e5e5e5;
+            border-radius: 6px;
+            background: white;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s ease;
+            font-size: 1em;
+        }
+
+        .mcq-option:hover {
+            border-color: #d1d5db;
+            background-color: #f9fafb;
+        }
+
+        .mcq-option.selected {
+            border-color: #3b82f6;
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+
+        .text-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e5e5e5;
+            border-radius: 6px;
+            font-size: 1em;
+            margin-bottom: 15px;
+            transition: border-color 0.2s ease;
+        }
+
+        .text-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+
+        .submit-btn {
+            background-color: #3b82f6;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.2s ease;
+        }
+
+        .submit-btn:hover {
+            background-color: #2563eb;
+        }
+
+        .submit-btn:disabled {
+            background-color: #d1d5db;
+            cursor: not-allowed;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 30px;
+        }
+
+        .nav-btn {
+            padding: 10px 20px;
+            border: 2px solid #e5e5e5;
+            border-radius: 6px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.9em;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            background-color: #f9fafb;
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .primary-btn {
+            background-color: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+
+        .primary-btn:hover {
+            background-color: #2563eb;
+        }
+
+        .finish-btn {
+            background-color: #10b981;
+            color: white;
+            border-color: #10b981;
+        }
+
+        .finish-btn:hover {
+            background-color: #059669;
+        }
+
+        .results {
+            text-align: center;
+        }
+
+        .score {
+            font-size: 4em;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        .score.excellent { color: #10b981; }
+        .score.good { color: #f59e0b; }
+        .score.needs-improvement { color: #ef4444; }
+
+        .percentage {
+            font-size: 1.5em;
+            font-weight: 600;
+            margin-bottom: 30px;
+        }
+
+        .review-item {
+            padding: 20px;
+            border: 1px solid #e5e5e5;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .review-item.correct {
+            border-color: #10b981;
+            background-color: #f0fdf4;
+        }
+
+        .review-item.incorrect {
+            border-color: #ef4444;
+            background-color: #fef2f2;
+        }
+
+        .review-question {
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .review-answer {
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .user-answer { color: #666; }
+        .correct-answer { color: #10b981; }
+
+        .reset-btn {
+            background-color: #3b82f6;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1em;
+            margin-top: 20px;
+            transition: background-color 0.2s ease;
+        }
+
+        .reset-btn:hover {
+            background-color: #2563eb;
+        }
+
+        .icon {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        .check-icon { color: #10b981; }
+        .x-icon { color: #ef4444; }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .options-grid {
+                flex-direction: column;
+            }
+            
+            .navigation {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="quiz-content">
+            <!-- Quiz content will be rendered here -->
+        </div>
+    </div>
+
+    <script>
+        const quizData = [
+            {
+                type: 'fill',
+                question: 'The library had an _______ collection of rare books.',
+                answer: 'abundant',
+                options: ['abundant', 'meager', 'scarce']
+            },
+            {
+                type: 'mcq',
+                question: 'What is the antonym of "candid"?',
+                options: ['Honest', 'Devious', 'Frank', 'Forthright'],
+                answer: 'Devious'
+            },
+            {
+                type: 'fill',
+                question: 'The hikers decided to _______ their original plan due to bad weather.',
+                answer: 'abandon',
+                options: ['abandon', 'retain', 'support']
+            },
+            {
+                type: 'mcq',
+                question: 'Which word is a synonym for "barren"?',
+                options: ['Fertile', 'Productive', 'Desolate', 'Fruitful'],
+                answer: 'Desolate'
+            },
+            {
+                type: 'fill',
+                question: 'Sarah was a _______ student who never missed her homework.',
+                answer: 'diligent',
+                options: ['diligent', 'lazy', 'careless']
+            },
+            {
+                type: 'mcq',
+                question: 'What is the antonym of "lucid"?',
+                options: ['Clear', 'Transparent', 'Vague', 'Obvious'],
+                answer: 'Vague'
+            },
+            {
+                type: 'fill',
+                question: 'The drought resulted in a _______ harvest this year.',
+                answer: 'meager',
+                options: ['meager', 'abundant', 'plentiful']
+            },
+            {
+                type: 'mcq',
+                question: 'Which word means "dangerous"?',
+                options: ['Safe', 'Perilous', 'Secure', 'Protected'],
+                answer: 'Perilous'
+            },
+            {
+                type: 'fill',
+                question: 'It would be _______ to save money for emergencies.',
+                answer: 'prudent',
+                options: ['prudent', 'wasteful', 'careless']
+            },
+            {
+                type: 'mcq',
+                question: 'What is a synonym for "cordial"?',
+                options: ['Hostile', 'Friendly', 'Rude', 'Cold'],
+                answer: 'Friendly'
+            },
+            {
+                type: 'fill',
+                question: 'The professor was known for being _______ and well-read.',
+                answer: 'erudite',
+                options: ['erudite', 'ignorant', 'unscholarly']
+            },
+            {
+                type: 'mcq',
+                question: 'What is the antonym of "genuine"?',
+                options: ['Real', 'Authentic', 'Fake', 'Original'],
+                answer: 'Fake'
+            },
+            {
+                type: 'fill',
+                question: 'The customer was _______ and rude to the staff.',
+                answer: 'insolent',
+                options: ['insolent', 'humble', 'courteous']
+            },
+            {
+                type: 'mcq',
+                question: 'Which word means "to lessen"?',
+                options: ['Enhance', 'Mitigate', 'Increase', 'Intensify'],
+                answer: 'Mitigate'
+            },
+            {
+                type: 'fill',
+                question: 'The glass was completely _______ and see-through.',
+                answer: 'transparent',
+                options: ['transparent', 'opaque', 'cloudy']
+            },
+            {
+                type: 'mcq',
+                question: 'What is the antonym of "turbulent"?',
+                options: ['Violent', 'Agitated', 'Calm', 'Stormy'],
+                answer: 'Calm'
+            },
+            {
+                type: 'fill',
+                question: 'He felt _______ and clumsy at the formal dinner.',
+                answer: 'awkward',
+                options: ['awkward', 'graceful', 'elegant']
+            },
+            {
+                type: 'mcq',
+                question: 'Which word is a synonym for "dubious"?',
+                options: ['Certain', 'Doubtful', 'Sure', 'Confident'],
+                answer: 'Doubtful'
+            },
+            {
+                type: 'fill',
+                question: 'The artist had _______ and unusual painting techniques.',
+                answer: 'eccentric',
+                options: ['eccentric', 'normal', 'customary']
+            },
+            {
+                type: 'mcq',
+                question: 'What is the antonym of "humble"?',
+                options: ['Meek', 'Modest', 'Arrogant', 'Gentle'],
+                answer: 'Arrogant'
+            }
+        ];
+
+        let currentQuestion = 0;
+        let userAnswers = {};
+        let showResults = false;
+        let fillAnswer = '';
+
+        function renderQuiz() {
+            const container = document.getElementById('quiz-content');
+            
+            if (showResults) {
+                container.innerHTML = renderResults();
+            } else {
+                container.innerHTML = renderQuestion();
+            }
+        }
+
+        function renderQuestion() {
+            const question = quizData[currentQuestion];
+            const progress = ((currentQuestion + 1) / quizData.length) * 100;
+            
+            let optionsHTML = '';
+            
+            if (question.type === 'mcq') {
+                optionsHTML = question.options.map(option => `
+                    <button class="mcq-option ${userAnswers[currentQuestion] === option ? 'selected' : ''}" 
+                            onclick="handleMCQAnswer('${option}')">
+                        ${option}
+                    </button>
+                `).join('');
+            } else {
+                const optionButtons = question.options.map(option => `
+                    <button class="option-button ${fillAnswer === option ? 'selected' : ''}" 
+                            onclick="setFillAnswer('${option}')">
+                        ${option}
+                    </button>
+                `).join('');
+                
+                optionsHTML = `
+                    <div class="options-container">
+                        <div class="options-label">Choose from the options below:</div>
+                        <div class="options-grid">
+                            ${optionButtons}
+                        </div>
+                    </div>
+                    <input type="text" class="text-input" value="${fillAnswer}" 
+                           placeholder="Type your answer here or select from options above..."
+                           oninput="fillAnswer = this.value; renderQuiz()"
+                           onkeypress="if(event.key === 'Enter') handleFillAnswer()">
+                    <button class="submit-btn" onclick="handleFillAnswer()" ${!fillAnswer.trim() ? 'disabled' : ''}>
+                        Submit Answer
+                    </button>
+                `;
+            }
+            
+            return `
+                <div class="header">
+                    <div class="title">English Vocabulary Quiz</div>
+                    <div class="question-counter">Question ${currentQuestion + 1} of ${quizData.length}</div>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: ${progress}%"></div>
+                </div>
+                <div class="question">${question.question}</div>
+                ${optionsHTML}
+                <div class="navigation">
+                    <button class="nav-btn" onclick="prevQuestion()" ${currentQuestion === 0 ? 'disabled' : ''}>
+                        ← Previous
+                    </button>
+                    ${currentQuestion === quizData.length - 1 ? 
+                        '<button class="nav-btn finish-btn" onclick="finishQuiz()">Finish Quiz</button>' :
+                        '<button class="nav-btn primary-btn" onclick="nextQuestion()">Next →</button>'
+                    }
+                </div>
+            `;
+        }
+
+        function renderResults() {
+            const score = calculateScore();
+            const percentage = Math.round((score / quizData.length) * 100);
+            const scoreClass = percentage >= 80 ? 'excellent' : percentage >= 60 ? 'good' : 'needs-improvement';
+            
+            const reviewItems = quizData.map((question, index) => {
+                const userAnswer = userAnswers[index];
+                const isCorrect = userAnswer && userAnswer.toLowerCase() === question.answer.toLowerCase();
+                
+                return `
+                    <div class="review-item ${isCorrect ? 'correct' : 'incorrect'}">
+                        <div class="review-question">
+                            <span class="icon ${isCorrect ? 'check-icon' : 'x-icon'}">
+                                ${isCorrect ? '✓' : '✗'}
+                            </span>
+                            ${index + 1}. ${question.question}
+                        </div>
+                        <div class="review-answer user-answer">
+                            <strong>Your answer:</strong> ${userAnswer || 'Not answered'}
+                        </div>
+                        <div class="review-answer correct-answer">
+                            <strong>Correct answer:</strong> ${question.answer}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            return `
+                <div class="results">
+                    <div class="title">Quiz Results</div>
+                    <div class="score ${scoreClass}">${score}/${quizData.length}</div>
+                    <div class="percentage ${scoreClass}">${percentage}%</div>
+                    <div style="margin-bottom: 30px;">
+                        ${reviewItems}
+                    </div>
+                    <button class="reset-btn" onclick="resetQuiz()">
+                        🔄 Take Quiz Again
+                    </button>
+                </div>
+            `;
+        }
+
+        function handleMCQAnswer(answer) {
+            userAnswers[currentQuestion] = answer;
+            renderQuiz();
+        }
+
+        function setFillAnswer(answer) {
+            fillAnswer = answer;
+            renderQuiz();
+        }
+
+        function handleFillAnswer() {
+            if (fillAnswer.trim()) {
+                userAnswers[currentQuestion] = fillAnswer.trim().toLowerCase();
+                fillAnswer = '';
+                renderQuiz();
+            }
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < quizData.length - 1) {
+                currentQuestion++;
+                fillAnswer = '';
+                renderQuiz();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                fillAnswer = '';
+                renderQuiz();
+            }
+        }
+
+        function finishQuiz() {
+            showResults = true;
+            renderQuiz();
+        }
+
+        function resetQuiz() {
+            currentQuestion = 0;
+            userAnswers = {};
+            showResults = false;
+            fillAnswer = '';
+            renderQuiz();
+        }
+
+        function calculateScore() {
+            let correct = 0;
+            quizData.forEach((question, index) => {
+                const userAnswer = userAnswers[index];
+                if (userAnswer && userAnswer.toLowerCase() === question.answer.toLowerCase()) {
+                    correct++;
+                }
+            });
+            return correct;
+        }
+
+        // Initialize the quiz
+        renderQuiz();
+    </script>
+</body>
+</html>
